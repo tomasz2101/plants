@@ -1,0 +1,3 @@
+[submodule "tools"]
+	path = tools
+	url = git@github.com:tomasz2101/tools.git

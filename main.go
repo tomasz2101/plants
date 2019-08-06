@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+
 	"plants/internal/pkg/dht"
 	"plants/internal/pkg/healpers"
 	"plants/internal/pkg/mqtt"
@@ -29,10 +30,10 @@ func argparser() (string, string, string, string, int, bool, int) {
 }
 func main() {
 
-	fmt.Printf("Start %s", healpers.GetDate())
-	user, password, deviceID,mqttHostname, mqttPort, testingMode, sleepTime := argparser()
+	fmt.Printf("Start %s\n", healpers.GetDate())
+	user, password, deviceID, mqttHostname, mqttPort, testingMode, sleepTime := argparser()
 	dht := dht.Sensor{
-		Pin: 4,
+		Pin:          4,
 		RetriesLimit: 4}
 
 	mqttClient := mqtt.Client{
@@ -41,12 +42,14 @@ func main() {
 		Name:     deviceID,
 		Username: user,
 		Password: password}
-	// go mqtt.Listen("test1")
+	// go mqtt.Listen("test1"1)
+
 	var i int
 	for {
 		temp, mois := dht.GetData()
-		message := mqttClient.PrepareData(fmt.Sprintf("message_%d", i), map[string]string{"temperature": fmt.Sprintf("%f", temp), "moisture": fmt.Sprintf("%f", mois)})
+		message := mqttClient.PrepareData(fmt.Sprintf("message_%d", 1), map[string]string{"temperature": fmt.Sprintf("%f", temp), "moisture": fmt.Sprintf("%f", mois)})
 		mqttClient.Publish("office", message)
+
 		if testingMode {
 			time.Sleep(2 * time.Second)
 			os.Exit(1)

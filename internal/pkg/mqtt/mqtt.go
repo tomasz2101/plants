@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"strings"
 
-	"net"
 	"os"
 	"plants/internal/pkg/healpers"
 	"time"
@@ -33,7 +33,7 @@ func (mqtt_client Client) Connect(clientID string) mqtt.Client {
 	// opts := createClientOptions(clientId, uri)
 	opts := mqtt.NewClientOptions()
 	// opts.AddBroker(fmt.Sprintf("tcp://%s:%d", mqtt_client.Hostname,mqtt_client.Port))
-	opts.AddBroker(fmt.Sprintf("tcp://localhost:1883"))
+	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", mqtt_client.Hostname, mqtt_client.Port))
 	opts.SetUsername(mqtt_client.Username)
 	opts.SetPassword(mqtt_client.Password)
 	opts.SetClientID(clientID)
@@ -89,9 +89,13 @@ type mqttMessage struct {
 func (mqtt_client Client) PrepareData(messageID string, inputData map[string]string) string {
 
 	hostname, _ := os.Hostname()
-	ip, _ := net.LookupHost(hostname)
+	ip := "unknown"
+	ipData, _ := net.LookupHost(hostname)
+	if len(ipData) > 0 {
+		ip = fmt.Sprintf("%v", ipData[0])
+	}
 	res2D := &deviceInfo{
-		Address:  ip[0],
+		Address:  ip,
 		DeviceID: mqtt_client.Name,
 		Mac:      healpers.GetMacAddr(),
 		Hostname: hostname}
